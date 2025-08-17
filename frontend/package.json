@@ -1,0 +1,37 @@
+{
+  "name": "amrutam-doctor-consultation-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run build:css && next dev",
+    "build": "npm run build:css && next build",
+    "start": "npm run build:css && next start",
+    "lint": "next lint",
+    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./src/styles/output.css",
+    "watch:css": "tailwindcss -i ./src/styles/globals.css -o ./src/styles/output.css --watch"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
+    "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
+    "jwt-decode": "^3.1.2",
+    "next": "13.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.43.9",
+    "react-hot-toast": "^2.4.1",
+    "react-query": "^3.39.3"
+  },
+  "devDependencies": {
+    "@types/node": "20.1.0",
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.4",
+    "autoprefixer": "^10.4.21",
+    "eslint": "8.40.0",
+    "eslint-config-next": "13.4.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "5.0.4"
+  }
+}
