@@ -277,7 +277,7 @@ const DoctorDashboard: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Rating</span>
-                  <div className="flex items-center">
+                  <div className=" flex items-center">
                     <span className="text-sm font-medium text-gray-900">
                       {stats.rating.average.toFixed(1)}
                     </span>

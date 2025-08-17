@@ -240,5 +240,4 @@ npm run dev
 - **Touch-Friendly**: Optimized for touch interactions
 - **Progressive Enhancement**: Works without JavaScript
 
-Full API documentation with examples is available at `/api-docs` when the server is running.#   d o c t o r - c o n s u l t a t i o n - p l a t f o r m  
- 
+Full API documentation with examples is available at `/api-docs` when the server is running.#
