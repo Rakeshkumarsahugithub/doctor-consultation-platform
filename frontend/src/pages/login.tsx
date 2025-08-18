@@ -31,9 +31,14 @@ const Login: NextPage = () => {
       router.push('/');
     } catch (error: any) {
       // Enhanced error handling with specific messages
-      let errorMessage = 'Login failed. Please try again.';
+      // let errorMessage = 'Login failed. Please try again.';
       
-      if (error.response?.status === 401) {
+      // if (error.response?.status === 401) {
+            let errorMessage = 'Login failed. Please check your credentials.';
+      
+      if (error.message && error.message.includes('Network connection error')) {
+        errorMessage = error.message;
+      } else if (error.response?.status === 401) {
         errorMessage = 'Invalid email or password. Please check your credentials.';
       } else if (error.response?.status === 404) {
         errorMessage = 'User not found. Please check your email or register for a new account.';
@@ -48,6 +53,7 @@ const Login: NextPage = () => {
       }
       
       toast.error(errorMessage);
+      console.log('Login error details:', error);
     } finally {
       setIsLoading(false);
     }
