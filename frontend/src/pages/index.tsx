@@ -55,7 +55,7 @@ const Home: NextPage = () => {
                 alt="Ayurvedic doctor consultation"
                 width={800}
                 height={600}
-                className="w-full h-[500px] object-cover rounded-lg bg-gray-50 shadow-xl ring-1 ring-gray-400/10"
+                className="w-full h-[300px] sm:h-[400px] md:h-[500px] object-contain sm:object-cover rounded-lg bg-gray-50 shadow-xl ring-1 ring-gray-400/10"
               />
             </div>
           </div>

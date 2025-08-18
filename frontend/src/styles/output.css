@@ -852,8 +852,8 @@ video {
   height: 2rem;
 }
 
-.h-\[500px\] {
-  height: 500px;
+.h-\[300px\] {
+  height: 300px;
 }
 
 .max-h-40 {
@@ -1563,6 +1563,11 @@ video {
 
 .fill-current {
   fill: currentColor;
+}
+
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 .object-cover {
@@ -2382,6 +2387,10 @@ body {
     display: none;
   }
 
+  .sm\:h-\[400px\] {
+    height: 400px;
+  }
+
   .sm\:w-full {
     width: 100%;
   }
@@ -2430,6 +2439,11 @@ body {
 
   .sm\:rounded-lg {
     border-radius: 0.5rem;
+  }
+
+  .sm\:object-cover {
+    -o-object-fit: cover;
+       object-fit: cover;
   }
 
   .sm\:px-12 {
@@ -2482,6 +2496,10 @@ body {
 
   .md\:flex {
     display: flex;
+  }
+
+  .md\:h-\[500px\] {
+    height: 500px;
   }
 
   .md\:grid-cols-2 {
