@@ -52,8 +52,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-// Import axios configuration
-import '../utils/axios';
+
 
 // Create a QueryClient instance
 const queryClient = new QueryClient({
