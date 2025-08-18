@@ -266,6 +266,11 @@ const { connectDB, createSearchIndexes } = require('./config/database');
 // Middleware to ensure DB connection for each request (Vercel serverless)
 app.use(async (req, res, next) => {
   try {
+    // Skip DB connection for health check and static routes
+    if (req.path === '/health' || req.path.startsWith('/api-docs')) {
+      return next();
+    }
+    
     await connectDB();
     next();
   } catch (error) {
@@ -273,7 +278,7 @@ app.use(async (req, res, next) => {
     res.status(500).json({
       success: false,
       error: 'Database connection failed',
-      message: 'Unable to connect to database'
+      message: `Unable to connect to database: ${error.message}`
     });
   }
 });
@@ -343,21 +348,6 @@ app.use('*', (req, res) => {
 
 // Import optimized database connection
 const { connectDB, createSearchIndexes } = require('./config/database');
-
-// Middleware to ensure DB connection for each request (Vercel serverless)
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error('Database connection failed:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Database connection failed',
-      message: 'Unable to connect to database'
-    });
-  }
-});
 
 // Start server
 const PORT = process.env.PORT || 5001;
