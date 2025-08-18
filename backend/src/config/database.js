@@ -60,6 +60,10 @@
 
 const mongoose = require('mongoose');
 
+// Disable Mongoose buffering globally for serverless
+mongoose.set('bufferCommands', false);
+mongoose.set('bufferMaxEntries', 0);
+
 // Global connection cache for Vercel serverless functions
 let cached = global.mongoose;
 
@@ -69,40 +73,53 @@ if (!cached) {
 
 // Optimized MongoDB connection for Vercel
 const connectDB = async () => {
-  if (cached.conn) {
+  // Return existing connection if available
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
+  }
+
+  // Clear any stale connections
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
   }
 
   if (!cached.promise) {
     const opts = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 8000, // Slightly increased for better reliability
-      socketTimeoutMS: 0, // Disable socket timeout
-      connectTimeoutMS: 8000,
-      maxPoolSize: 10,
-      minPoolSize: 1, // Reduced minimum pool size
-      maxIdleTimeMS: 30000,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 0,
+      connectTimeoutMS: 5000,
+      maxPoolSize: 5, // Reduced for serverless
+      minPoolSize: 1,
+      maxIdleTimeMS: 10000, // Reduced for serverless
       bufferCommands: false,
       bufferMaxEntries: 0,
-      heartbeatFrequencyMS: 10000,
+      heartbeatFrequencyMS: 30000,
       retryWrites: true,
+      authSource: 'admin'
     };
 
+    console.log('Attempting MongoDB connection...');
     cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => {
       console.log('MongoDB Connected Successfully');
       return mongoose;
+    }).catch((error) => {
+      console.error('MongoDB connection failed:', error);
+      cached.promise = null;
+      throw error;
     });
   }
 
   try {
     cached.conn = await cached.promise;
+    return cached.conn;
   } catch (e) {
     cached.promise = null;
-    throw e;
+    cached.conn = null;
+    console.error('Database connection error:', e);
+    throw new Error(`Database connection failed: ${e.message}`);
   }
-
-  return cached.conn;
 };
 
 // Create text indexes for better search performance
@@ -162,4 +179,5 @@ module.exports = {
   connectDB,
   createSearchIndexes
 };
+
 
