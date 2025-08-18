@@ -30,7 +30,7 @@ app.use(helmet());
 // }));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://your-domain.com'] 
+    ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://doctor-consultation-platform.vercel.app'] 
     : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app', 'http://10.139.241.113:3000', 'capacitor://localhost', 'http://localhost'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
