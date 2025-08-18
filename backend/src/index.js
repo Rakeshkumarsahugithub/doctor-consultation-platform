@@ -45,7 +45,11 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Private-Network', 'true');
   next();
 });
-
+// Handle OPTIONS requests explicitly
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  res.status(204).end();
+});
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
@@ -132,6 +136,11 @@ const connectDB = async () => {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+       serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+      socketTimeoutMS: 45000, // Socket timeout
+      connectTimeoutMS: 30000, // Connection timeout
+      keepAlive: true,
+      keepAliveInitialDelay: 300000, // 5 minutes
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
