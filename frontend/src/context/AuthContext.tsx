@@ -169,6 +169,7 @@
 // };
 
 
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -254,9 +255,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       console.log('Logging in with API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
+      
+      // Set a longer timeout for mobile devices
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, {
         email,
         password,
+      }, {
+        timeout: 15000, // 15 seconds timeout
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
 
       const { token, user } = response.data.data;
@@ -275,6 +284,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error: any) {
       console.error('Login error:', error);
       console.error('Response data:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Error code:', error.code);
+      
+      // Provide more specific error messages for network issues
+      if (error.message && error.message.includes('Network Error')) {
+        throw new Error('Network connection error. Please check your internet connection and try again.');
+      }
+      
       throw error;
     }
   };
@@ -287,6 +304,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email,
         password,
         phone,
+      }, {
+        timeout: 15000, // 15 seconds timeout
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
 
       const { token, user } = response.data.data;
@@ -305,6 +328,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error: any) {
       console.error('Registration error:', error);
       console.error('Response data:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Error code:', error.code);
+      
+      // Provide more specific error messages for network issues
+      if (error.message && error.message.includes('Network Error')) {
+        throw new Error('Network connection error. Please check your internet connection and try again.');
+      }
+      
       throw error;
     }
   };
