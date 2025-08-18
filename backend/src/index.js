@@ -22,8 +22,18 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://your-domain.com'] 
     : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+// Add middleware to handle preflight requests for private network access
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  next();
+});
 
 // Rate limiting
 const limiter = rateLimit({
