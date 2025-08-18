@@ -18,13 +18,24 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+// app.use(cors({
+//   origin: process.env.NODE_ENV === 'production' 
+//     ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://your-domain.com'] 
+//     : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app'],
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
+// }));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://your-domain.com'] 
-    : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app'],
+    : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app', 'http://10.139.241.113:3000', 'capacitor://localhost', 'http://localhost'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Private-Network'],
+  exposedHeaders: ['Access-Control-Allow-Private-Network'],
   preflightContinue: false,
   optionsSuccessStatus: 204
 }));
