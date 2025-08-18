@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Fetch user profile
         const fetchUserProfile = async () => {
           try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/auth/profile`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/profile`);
             setUser(response.data.data);
             setToken(storedToken);
           } catch (error) {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, {
         email,
         password,
       });
@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async (name: string, email: string, password: string, phone?: string) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, {
         name,
         email,
         password,
