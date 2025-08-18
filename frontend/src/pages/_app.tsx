@@ -44,6 +44,7 @@
 
 // pages/_app.tsx
 
+
 import '@/styles/globals.css';
 import '@/styles/output.css';
 import { Toaster } from 'react-hot-toast';
@@ -52,7 +53,6 @@ import { AuthProvider } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-
 
 // Create a QueryClient instance
 const queryClient = new QueryClient({
