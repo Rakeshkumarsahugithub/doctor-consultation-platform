@@ -39,7 +39,10 @@ const Register: NextPage = () => {
       // Enhanced error handling with specific messages
       let errorMessage = 'Registration failed. Please try again.';
       
-      if (error.response?.status === 409) {
+      // if (error.response?.status === 409) {
+       if (error.message && error.message.includes('Network connection error')) {
+        errorMessage = error.message;
+      } else if (error.response?.status === 409) {
         errorMessage = 'User already exists with this email. Please try logging in or use a different email.';
       } else if (error.response?.status === 400) {
         if (error.response.data?.message?.includes('email')) {
@@ -60,6 +63,7 @@ const Register: NextPage = () => {
       }
       
       toast.error(errorMessage);
+      console.log('Registration error details:', error);
     } finally {
       setIsLoading(false);
     }
