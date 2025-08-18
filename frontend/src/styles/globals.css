@@ -111,4 +111,49 @@ body {
   .border-muted {
     border-color: #e5e7eb;
   }
+
+  /* Mobile-specific fixes */
+  @media (max-width: 640px) {
+    /* Fix iOS Safari input zoom */
+    input[type="email"],
+    input[type="password"],
+    input[type="text"],
+    input[type="tel"] {
+      font-size: 16px !important;
+      appearance: none;
+      -webkit-appearance: none;
+      -webkit-border-radius: 0;
+      border-radius: 0.375rem;
+    }
+
+    /* Ensure proper touch targets */
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Fix form container padding on mobile */
+    .mobile-form-container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    /* Prevent horizontal scroll */
+    body {
+      overflow-x: hidden;
+    }
+
+    /* Fix viewport issues */
+    .min-h-full {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  /* iOS Safari specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    .min-h-full {
+      min-height: -webkit-fill-available;
+    }
+  }
 }
