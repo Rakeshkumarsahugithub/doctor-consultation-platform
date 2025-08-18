@@ -58,11 +58,11 @@
 // };
 
 
+
 const mongoose = require('mongoose');
 
 // Disable Mongoose buffering globally for serverless
 mongoose.set('bufferCommands', false);
-mongoose.set('bufferMaxEntries', 0);
 
 // Global connection cache for Vercel serverless functions
 let cached = global.mongoose;
@@ -90,14 +90,12 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 0,
       connectTimeoutMS: 5000,
-      maxPoolSize: 5, // Reduced for serverless
+      maxPoolSize: 5,
       minPoolSize: 1,
-      maxIdleTimeMS: 10000, // Reduced for serverless
+      maxIdleTimeMS: 10000,
       bufferCommands: false,
-      bufferMaxEntries: 0,
       heartbeatFrequencyMS: 30000,
-      retryWrites: true,
-      authSource: 'admin'
+      retryWrites: true
     };
 
     console.log('Attempting MongoDB connection...');
@@ -179,5 +177,3 @@ module.exports = {
   connectDB,
   createSearchIndexes
 };
-
-
