@@ -20,12 +20,8 @@ const app = express();
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-<<<<<<< HEAD
     ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://your-domain.com'] 
-=======
-    ? ['https://doctor-consultation-platform-iv8g.vercel.app'] 
->>>>>>> 0a88f0759f8d2997c7c62ad2ecc82a298a2ea326
-    : ['http://localhost:3000'],
+    : ['http://localhost:3000', 'https://doctor-consultation-platform-iv8g.vercel.app'],
   credentials: true
 }));
 

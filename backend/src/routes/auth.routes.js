@@ -75,6 +75,13 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+router.options('/register', (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'https://doctor-consultation-platform-iv8g.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.status(200).end();
+});
+
 router.post('/register', validateRegistration, register);
 
 /**
