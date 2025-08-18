@@ -971,7 +971,3 @@ module.exports = {
   changePassword,
   logout
 };
-
-
-
-
