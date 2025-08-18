@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_API_URL: 'https://doctor-consultation-platform.vercel.app' || 'http://localhost:5000'
+    NEXT_PUBLIC_API_URL: 'http://localhost:5000'
 },
   },
   images: {
