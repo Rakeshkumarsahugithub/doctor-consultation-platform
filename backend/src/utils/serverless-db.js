@@ -40,3 +40,4 @@ const withDatabase = (handler) => {
 };
 
 module.exports = { withDatabase };
+
