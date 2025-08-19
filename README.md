@@ -1,7 +1,7 @@
 # Amrutam Doctor Consultation Platform
 
 A modern Ayurvedic doctor consultation platform built with Next.js frontend and Node.js backend, featuring real-time appointment booking, doctor discovery, and comprehensive user management.
-
+**[🚀 View Video Demo](https://drive.google.com/file/d/1TIUfCwLyi69oeW5ARHs9g1-fpcdi4jfj/view?usp=drive_link)**
 ## 🚀 Technologies Used
 
 ### Backend Technologies
