@@ -208,51 +208,12 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-// app.use(cors({
-//   origin: function(origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if(!origin) return callback(null, true);
-    
-//     const allowedOrigins = process.env.NODE_ENV === 'production'
-//       ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://doctor-consultation-platform.vercel.app', 'https://your-domain.com']
-//       : ['http://localhost:3000', 'http://localhost:5000', 'http://10.139.241.113:3000', 'capacitor://localhost', 'http://localhost'];
-      
-//     if(allowedOrigins.indexOf(origin) !== -1 || !origin) {
-//       callback(null, true);
-//     } else {
-//       console.log('Blocked origin:', origin);
-//       callback(null, true); // Temporarily allow all origins while debugging
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Private-Network'],
-//   exposedHeaders: ['Access-Control-Allow-Private-Network'],
-//   preflightContinue: false,
-//   optionsSuccessStatus: 204
-// }));
 
-// // Add middleware to handle preflight requests for private network access
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Private-Network', 'true');
-//   next();
-// });
-
-// // Handle OPTIONS requests explicitly
-// app.options('*', (req, res) => {
-//   res.setHeader('Access-Control-Allow-Private-Network', 'true');
-//   res.status(204).end();
-// });
-
-// Middleware: Security
-app.use(helmet());
-
-// ✅ Updated CORS configuration
+// CORS configuration
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
       'https://doctor-consultation-platform-iv8g.vercel.app',
-      'https://doctor-consultation-platform.vercel.app',
-      'https://your-domain.com' // Replace with your real domain if needed
+      'https://your-domain.com' // Replace with your real domain
     ]
   : [
       'http://localhost:3000',
@@ -262,12 +223,32 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
       'http://localhost'
     ];
 
+// CORS middleware
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin like curl, mobile apps, Postman, etc.
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.log('❌ Blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // If your frontend needs to send cookies/auth headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+}));
+
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -277,7 +258,7 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Rate limiting
+// Rate limiting middleware
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
@@ -285,7 +266,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Logging
+// Logging middleware (except in test environment)
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
@@ -294,15 +275,14 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-
-// Middleware to ensure DB connection for each request (Vercel serverless)
+// Middleware to ensure DB connection for each request (for serverless platforms)
 app.use(async (req, res, next) => {
   try {
     // Skip DB connection for health check and static routes
     if (req.path === '/health' || req.path.startsWith('/api-docs')) {
       return next();
     }
-    
+
     await connectDB();
     next();
   } catch (error) {
@@ -339,7 +319,7 @@ app.use('/api/slots', slotRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
+
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       error: 'Validation Error',
@@ -347,25 +327,33 @@ app.use((err, req, res, next) => {
       details: err.errors
     });
   }
-  
+
   if (err.name === 'CastError') {
     return res.status(400).json({
       error: 'Invalid ID format',
       message: 'The provided ID is not valid'
     });
   }
-  
+
   if (err.code === 11000) {
     return res.status(409).json({
       error: 'Duplicate Entry',
       message: 'A record with this information already exists'
     });
   }
-  
+
+  // Handle CORS errors thrown by the cors middleware
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({
+      error: 'CORS Error',
+      message: 'Origin not allowed by CORS policy'
+    });
+  }
+
   res.status(500).json({
     error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'production' 
-      ? 'Something went wrong' 
+    message: process.env.NODE_ENV === 'production'
+      ? 'Something went wrong'
       : err.message
   });
 });
@@ -385,7 +373,7 @@ const startServer = async () => {
   try {
     await connectDB();
     await createSearchIndexes();
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`API Documentation: http://localhost:${PORT}/api-docs`);
