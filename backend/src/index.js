@@ -209,54 +209,38 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [
-      'https://doctor-consultation-platform-iv8g.vercel.app',
-      'https://your-domain.com' // Replace with your real domain
-    ]
-  : [
-      'http://localhost:3000',
-      'http://localhost:5000',
-      'http://10.139.241.113:3000',
-      'capacitor://localhost',
-      'http://localhost'
-    ];
-
-// CORS middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin like curl, mobile apps, Postman, etc.
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('❌ Blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // If your frontend needs to send cookies/auth headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 204
-}));
-
-// Handle preflight OPTIONS requests for all routes
-app.options('*', cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'https://doctor-consultation-platform-iv8g.vercel.app',
+    'http://localhost:3000'
+  ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 204
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Allow-Credentials',
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  optionsSuccessStatus: 200
 }));
+
+// Add middleware to handle preflight requests for private network access
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  next();
+});
+
+// Handle OPTIONS requests explicitly
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  res.status(204).end();
+});
 
 // Rate limiting middleware
 const limiter = rateLimit({
