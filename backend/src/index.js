@@ -208,41 +208,74 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if(!origin) return callback(null, true);
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if(!origin) return callback(null, true);
     
-    const allowedOrigins = process.env.NODE_ENV === 'production'
-      ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://doctor-consultation-platform.vercel.app', 'https://your-domain.com']
-      : ['http://localhost:3000', 'http://localhost:5000', 'http://10.139.241.113:3000', 'capacitor://localhost', 'http://localhost'];
+//     const allowedOrigins = process.env.NODE_ENV === 'production'
+//       ? ['https://doctor-consultation-platform-iv8g.vercel.app', 'https://doctor-consultation-platform.vercel.app', 'https://your-domain.com']
+//       : ['http://localhost:3000', 'http://localhost:5000', 'http://10.139.241.113:3000', 'capacitor://localhost', 'http://localhost'];
       
-    if(allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//     if(allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       console.log('Blocked origin:', origin);
+//       callback(null, true); // Temporarily allow all origins while debugging
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Private-Network'],
+//   exposedHeaders: ['Access-Control-Allow-Private-Network'],
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
+// }));
+
+// // Add middleware to handle preflight requests for private network access
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Private-Network', 'true');
+//   next();
+// });
+
+// // Handle OPTIONS requests explicitly
+// app.options('*', (req, res) => {
+//   res.setHeader('Access-Control-Allow-Private-Network', 'true');
+//   res.status(204).end();
+// });
+
+// Middleware: Security
+app.use(helmet());
+
+// ✅ Updated CORS configuration
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [
+      'https://doctor-consultation-platform-iv8g.vercel.app',
+      'https://doctor-consultation-platform.vercel.app',
+      'https://your-domain.com' // Replace with your real domain if needed
+    ]
+  : [
+      'http://localhost:3000',
+      'http://localhost:5000',
+      'http://10.139.241.113:3000',
+      'capacitor://localhost',
+      'http://localhost'
+    ];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('Blocked origin:', origin);
-      callback(null, true); // Temporarily allow all origins while debugging
+      console.log('❌ Blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Private-Network'],
-  exposedHeaders: ['Access-Control-Allow-Private-Network'],
-  preflightContinue: false,
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204
 }));
-
-// Add middleware to handle preflight requests for private network access
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Private-Network', 'true');
-  next();
-});
-
-// Handle OPTIONS requests explicitly
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Private-Network', 'true');
-  res.status(204).end();
-});
 
 // Rate limiting
 const limiter = rateLimit({
